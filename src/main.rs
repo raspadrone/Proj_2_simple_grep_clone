@@ -21,27 +21,13 @@ impl Config {
 
         let query = match args_iter.next() {
             // query - mandatory arg[1]
-            Some(arg) => {
-                if arg == "-i" || arg == "--ignore-case" {
-                    return Err(
-                        "Unrecognized argument. Usage: <query> <file_path> [-i/--ignore-case]",
-                    );
-                }
-                arg.clone()
-            }
+            Some(arg) => arg.clone(),
             None => return Err("Not enough arguments: query not provided."),
         };
 
         let file_path = match args_iter.next() {
             // path - mandatory arg[2]
-            Some(arg) => {
-                if arg == "-i" || arg == "--ignore-case" {
-                    return Err(
-                        "Unrecognized argument. Usage: <query> <file_path> [-i/--ignore-case]",
-                    );
-                }
-                arg.clone()
-            }
+            Some(arg) => arg.clone(),
             None => return Err("Not enough arguments: file_path not provided."),
         };
         let mut ignore_case = false;
