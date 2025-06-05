@@ -17,29 +17,48 @@ struct Config {
 
 impl Config {
     fn build(args: &[String]) -> Result<Config, &'static str> {
-        let mut args_iter = args.iter().skip(1); // skip program name 
+        let mut args_iter = args.iter().skip(1); // skip program name
 
-        let query = match args_iter.next() { // query - mandatory arg[1] 
-            Some(arg) => arg.clone(),
+        let query = match args_iter.next() {
+            // query - mandatory arg[1]
+            Some(arg) => {
+                if arg == "-i" || arg == "--ignore-case" {
+                    return Err(
+                        "Unrecognized argument. Usage: <query> <file_path> [-i/--ignore-case]",
+                    );
+                }
+                arg.clone()
+            }
             None => return Err("Not enough arguments: query not provided."),
         };
 
-        let file_path = match args_iter.next() { // path - mandatory arg[2]
-            Some(arg) => arg.clone(),
+        let file_path = match args_iter.next() {
+            // path - mandatory arg[2]
+            Some(arg) => {
+                if arg == "-i" || arg == "--ignore-case" {
+                    return Err(
+                        "Unrecognized argument. Usage: <query> <file_path> [-i/--ignore-case]",
+                    );
+                }
+                arg.clone()
+            }
             None => return Err("Not enough arguments: file_path not provided."),
         };
-
         let mut ignore_case = false;
-
         for arg in args_iter {
             if arg == "-i" || arg == "--ignore-case" {
                 ignore_case = true;
             } else {
-                return Err("Unrecognized argument or flag. Usage: <query> <file_path> [-i/--ignore-case]");
+                return Err(
+                    "Unrecognized argument or flag. Usage: <query> <file_path> [-i/--ignore-case]",
+                );
             }
         }
-
-        Ok(Config { query, file_path, ignore_case })
+        Ok(Config {
+            query,
+            file_path,
+            ignore_case,
+        })
     }
 }
 
