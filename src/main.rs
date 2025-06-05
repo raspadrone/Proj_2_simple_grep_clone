@@ -17,31 +17,29 @@ struct Config {
 
 impl Config {
     fn build(args: &[String]) -> Result<Config, &'static str> {
-        let args_len = args.len();
-        if args_len == 3 {
-            let config = Config {
-                query: args[1].clone(),
-                file_path: args[2].clone(),
-                ignore_case: false,
-            };
-            return Ok(config);
-        } else if args_len == 4 {
-            let mut config = Config {
-                query: args[1].clone(),
-                file_path: args[2].clone(),
-                ignore_case: false,
-            };
-            if args.contains(&"-i".to_string()) || args.contains(&"--ignore-case".to_string()) {
-                config.ignore_case = true;
+        let mut args_iter = args.iter().skip(1); // skip program name 
+
+        let query = match args_iter.next() { // query - mandatory arg[1] 
+            Some(arg) => arg.clone(),
+            None => return Err("Not enough arguments: query not provided."),
+        };
+
+        let file_path = match args_iter.next() { // path - mandatory arg[2]
+            Some(arg) => arg.clone(),
+            None => return Err("Not enough arguments: file_path not provided."),
+        };
+
+        let mut ignore_case = false;
+
+        for arg in args_iter {
+            if arg == "-i" || arg == "--ignore-case" {
+                ignore_case = true;
             } else {
-                return Err("Expected ignore case flag");
+                return Err("Unrecognized argument or flag. Usage: <query> <file_path> [-i/--ignore-case]");
             }
-            return Ok(config);
-        } else if args_len < 3 {
-            return Err("Not enough arguments");
-        } else {
-            return Err("Too many arguments");
         }
+
+        Ok(Config { query, file_path, ignore_case })
     }
 }
 
