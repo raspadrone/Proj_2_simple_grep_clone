@@ -1,0 +1,6 @@
+[package]
+name = "proj2_simple_grep_clone"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
