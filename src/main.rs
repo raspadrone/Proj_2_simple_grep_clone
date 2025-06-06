@@ -7,7 +7,11 @@
 - Optionally, it should support a case-insensitive search mode, activated by a flag (e.g., -i or --ignore-case).
 - Handle errors gracefully (e.g., file not found, permission denied), printing messages to stderr. */
 
-use std::env::args;
+use std::{
+    env::args,
+    fs::File,
+    io::{BufRead, BufReader},
+};
 #[derive(Debug)]
 struct Config {
     query: String,     // the pattern to search for
@@ -48,11 +52,40 @@ impl Config {
     }
 }
 
+fn run(config: Config) -> Result<(), Box<dyn std::error::Error>> {
+    let file = File::open(&config.file_path)?;
+    let reader = BufReader::new(file);
+
+    for (idx, line) in reader.lines().enumerate() {
+        match line {
+            Ok(line_str) => {
+                if config.ignore_case {
+                    if line_str
+                        .to_lowercase()
+                        .contains(&config.query.to_lowercase())
+                    {
+                        println!("Line {}: {line_str}", idx + 1);
+                    }
+                } else {
+                    if line_str.contains(&config.query) {
+                        println!("Line {}: {line_str}", idx + 1);
+                    }
+                }
+            }
+            Err(e) => eprintln!("Error reading line: {}", e),
+        }
+    }
+    Ok(())
+}
+
 fn main() {
     let args: Vec<String> = args().collect();
     let config = Config::build(&args);
     match config {
-        Ok(config) => println!("{config:?}"),
+        Ok(config) => {
+            println!("{config:?}");
+            let _ = run(config);
+        }
         Err(e) => {
             eprintln!("{e}");
             std::process::exit(1);
