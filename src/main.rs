@@ -83,7 +83,7 @@ fn main() {
     let config = Config::build(&args);
     match config {
         Ok(config) => {
-            println!("{config:?}");
+            // println!("{config:?}");
             let _ = run(config);
         }
         Err(e) => {
